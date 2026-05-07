@@ -10,7 +10,6 @@ RUN apt-get update && apt-get install -y \
     ca-certificates \
     gnupg \
     lsb-release \
-    docker.io \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
@@ -18,6 +17,6 @@ RUN curl -fsSL https://deb.nodesource.com/setup_22.x | bash - \
 
 RUN apt-get update && apt-get install -y maven
 
-RUN usermod -aG docker jenkins
+RUN curl -fsSL https://get.docker.com | sh
 
 USER jenkins
