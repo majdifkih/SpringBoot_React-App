@@ -15,9 +15,7 @@ services:
       - '5432:5432'
 
   backend:
-    build:
-      context: .
-      dockerfile: dockerfile
+    image: majdifk/backend-app:latest
     container_name: backend_app
     restart: unless-stopped
     depends_on:
