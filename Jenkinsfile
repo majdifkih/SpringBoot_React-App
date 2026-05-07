@@ -17,7 +17,8 @@ pipeline {
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    sh 'mvn clean package -DskipTests'
+                    sh 'chmod +x mvnw'
+                    sh './mvnw clean package -DskipTests'
                 }
             }
         }
@@ -33,26 +34,19 @@ pipeline {
         stage('Build Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'npm install'
+                    sh 'npm ci'
                     sh 'npm run build'
                 }
-            }
-        }
-
-        stage('Build Docker Images') {
-            steps {
-                sh 'docker build -t $BACKEND_IMAGE -f backend/Dockerfile backend'
-                sh 'docker build -t $FRONTEND_IMAGE -f frontend/Dockerfile frontend'
             }
         }
     }
 
     post {
         success {
-            echo 'Pipeline executed successfully 🚀'
+            echo 'Pipeline SUCCESS 🚀'
         }
         failure {
-            echo 'Pipeline failed ❌'
+            echo 'Pipeline FAILED ❌'
         }
     }
 }
