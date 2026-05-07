@@ -38,9 +38,9 @@ pipeline {
         stage('Deploy Backend') {
             steps {
                 dir('backend') {
-                    sh 'docker compose down || true'
-                    sh 'docker compose pull'
-                    sh 'docker compose up -d'
+                    sh 'docker-compose down || true'
+                    sh 'docker-compose pull'
+                    sh 'docker-compose up -d'
                 }
             }
         }
@@ -48,9 +48,9 @@ pipeline {
         stage('Deploy Frontend') {
             steps {
                 dir('frontend') {
-                    sh 'docker compose down || true'
-                    sh 'docker compose pull'
-                    sh 'docker compose up -d'
+                    sh 'docker-compose down || true'
+                    sh 'docker-compose pull'
+                    sh 'docker-compose up -d'
                 }
             }
         }
