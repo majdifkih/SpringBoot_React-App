@@ -2,9 +2,7 @@
 
 services:
   frontend:
-    build:
-      context: .
-      dockerfile: dockerfile
+    image: majdifk/frontend-app:latest
     container_name: frontend_app
     ports:
       - '5173:80'

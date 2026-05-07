@@ -1,11 +1,6 @@
 pipeline {
     agent any
 
-    environment {
-        BACKEND_IMAGE = "springboot-backend"
-        FRONTEND_IMAGE = "react-frontend"
-    }
-
     stages {
 
         stage('Checkout') {
@@ -39,14 +34,39 @@ pipeline {
                 }
             }
         }
+
+        stage('Deploy Backend') {
+            steps {
+                dir('backend') {
+                    sh 'docker compose down || true'
+                    sh 'docker compose pull'
+                    sh 'docker compose up -d'
+                }
+            }
+        }
+
+        stage('Deploy Frontend') {
+            steps {
+                dir('frontend') {
+                    sh 'docker compose down || true'
+                    sh 'docker compose pull'
+                    sh 'docker compose up -d'
+                }
+            }
+        }
     }
 
     post {
         success {
             echo 'Pipeline SUCCESS 🚀'
         }
+
         failure {
             echo 'Pipeline FAILED ❌'
+        }
+
+        always {
+            cleanWs()
         }
     }
 }
