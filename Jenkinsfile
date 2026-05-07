@@ -10,14 +10,13 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/majdifkih/SpringBoot_React-App.git'
+                git branch: 'main', url: 'https://github.com/majdifkih/SpringBoot_React-App.git'
             }
         }
 
         stage('Build Backend') {
             steps {
                 dir('backend') {
-                    sh 'chmod +x mvnw'
                     sh './mvnw clean package -DskipTests'
                 }
             }
@@ -42,13 +41,8 @@ pipeline {
 
         stage('Build Docker Images') {
             steps {
-                dir('backend') {
-                    sh 'docker build -t $BACKEND_IMAGE -f dockerfile .'
-                }
-
-                dir('frontend') {
-                    sh 'docker build -t $FRONTEND_IMAGE -f dockerfile .'
-                }
+                sh 'docker build -t $BACKEND_IMAGE -f backend/Dockerfile backend'
+                sh 'docker build -t $FRONTEND_IMAGE -f frontend/Dockerfile frontend'
             }
         }
     }
@@ -57,7 +51,6 @@ pipeline {
         success {
             echo 'Pipeline executed successfully 🚀'
         }
-
         failure {
             echo 'Pipeline failed ❌'
         }
