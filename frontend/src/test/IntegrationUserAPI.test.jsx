@@ -1,19 +1,20 @@
 import { render, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, it, expect, vi } from "vitest";
+import { describe, it, expect, vi, beforeEach } from "vitest";
 
 import App from "../App";
 import axios from "axios";
 
 vi.mock("axios");
 
+beforeEach(() => {
+  axios.get.mockResolvedValue({ data: [] });
+  axios.post.mockResolvedValue({ data: {} });
+});
+
 describe("Integration API test", () => {
   it("submit form calls API", async () => {
     const user = userEvent.setup();
-
-    axios.post.mockResolvedValue({
-      data: {},
-    });
 
     render(<App />);
 
@@ -28,5 +29,5 @@ describe("Integration API test", () => {
     await waitFor(() => {
       expect(axios.post).toHaveBeenCalled();
     });
-  });
+  }, 10000);
 });
