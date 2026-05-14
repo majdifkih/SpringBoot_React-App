@@ -1,36 +1,77 @@
 pipeline {
     agent any
 
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+    }
+
+    environment {
+        COMPOSE_DOCKER_CLI_BUILD = '1'
+        DOCKER_BUILDKIT = '1'
+    }
+
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/majdifkih/SpringBoot_React-App.git'
+                git branch: 'main',
+                url: 'https://github.com/majdifkih/SpringBoot_React-App.git'
             }
         }
 
-        stage('Build Backend') {
-            steps {
-                dir('backend') {
-                    sh 'chmod +x mvnw'
-                    sh './mvnw clean package -DskipTests'
-                }
-            }
-        }
-
-        stage('Test Backend') {
-            steps {
-                dir('backend') {
-                    sh './mvnw test'
-                }
-            }
-        }
-
-        stage('Build Frontend') {
+        stage('Install Frontend Dependencies') {
             steps {
                 dir('frontend') {
                     sh 'npm ci'
-                    sh 'npm run build'
+                }
+            }
+        }
+
+        stage('Build & Test') {
+            parallel {
+
+                stage('Backend') {
+                    stages {
+
+                        stage('Build Backend') {
+                            steps {
+                                dir('backend') {
+                                    sh 'chmod +x mvnw'
+                                    sh './mvnw clean package -DskipTests'
+                                }
+                            }
+                        }
+
+                        stage('Test Backend') {
+                            steps {
+                                dir('backend') {
+                                    sh './mvnw test'
+                                }
+                            }
+                        }
+                    }
+                }
+
+                stage('Frontend') {
+                    stages {
+
+                        stage('Test Frontend') {
+                            steps {
+                                dir('frontend') {
+                                    sh 'npm run test'
+                                }
+                            }
+                        }
+
+                        stage('Build Frontend') {
+                            steps {
+                                dir('frontend') {
+                                    sh 'npm run build'
+                                }
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -57,6 +98,7 @@ pipeline {
     }
 
     post {
+
         success {
             echo 'Pipeline SUCCESS 🚀'
         }
